@@ -11,6 +11,8 @@ type Flag struct {
 	// Type, DefaultValue, Value: Must be bool, float64, int, or string
 	Type                string
 	DefaultValue, Value interface{}
+	// Required - If this flag is required to be passed
+	Required bool
 	// Allow passing of no value, mainly for triggering certain actions
 	AllowNothing bool
 }

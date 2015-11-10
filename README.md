@@ -55,6 +55,8 @@ type Flag struct {
     // Type, DefaultValue, Value: Must be bool, float64, int, or string
     Type                string
     DefaultValue, Value interface{}
+    // Required - If this flag is required to be passed
+    Required bool
     // Allow passing of no value, mainly for triggering certain actions
     AllowNothing bool
 }
@@ -143,6 +145,7 @@ The below `Set` call will create a required flag called `build-for`, where you m
 nflag.Set("build-for", nflag.Flag{
     Descriptor: "What are we building this for.",
     Type : "string",
+    Required : true,
 })
 ```
 

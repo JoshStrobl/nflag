@@ -133,8 +133,8 @@ func Parse() {
 	}
 
 	for flagName, _ := range Flags { // For each flagName in Flags
-		if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via ParseVal)
-			ParseVal(flagName, "")
+		if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
+			ParseVal(flagName, "flag-not-provided")
 		}
 	}
 }
@@ -145,7 +145,7 @@ func ParseVal(flagName string, flagValue string) {
 	trimmedFlag, exists := Flags[flagName] // Get the trimmedFlag and the exists bool of this flagName in Flags
 
 	if exists { // If the flag exists
-		if flagValue != "" { // If a value was defined
+		if (flagValue != "") && (flagValue != "flag-not-provided") { // If a value was defined
 			var conversionError error // Define conversionError as any error from not correctly converting the value to the type
 
 			if trimmedFlag.Type == "bool" { // If the type is bool
@@ -162,10 +162,28 @@ func ParseVal(flagName string, flagValue string) {
 				fmt.Println("An incorrect value was provided when using " + Config.OSSpecificFlagString + "flagName . Exiting.")
 				os.Exit(1)
 			}
-		} else { // If no value was provided
-			if trimmedFlag.AllowNothing { // If passing no value is allowed
-				trimmedFlag.Value = trimmedFlag.DefaultValue
-			} else { // If passing no value is NOT allowed
+		} else { // If no value was provided by the user
+			returnRequiredValueMessage := false
+
+			if flagValue == "" { // If the flag was provided by the user but no content
+				if trimmedFlag.AllowNothing { // If providing no content is permitted
+					if trimmedFlag.Type == "bool" { // If the flag is bool
+						trimmedFlag.Value = true // Force true
+					} else { // If the flag is not bool
+						trimmedFlag.Value = trimmedFlag.DefaultValue // Set to defaultvalue
+					}
+				} else { // If providing no content is NOT permitted
+					returnRequiredValueMessage = true
+				}
+			} else { // If this flag was not provided
+				if !trimmedFlag.Required { // If the flag is NOT required
+					trimmedFlag.Value = trimmedFlag.DefaultValue // Set the value to the default
+				} else { // If the flag IS required
+					returnRequiredValueMessage = true
+				}
+			}
+
+			if returnRequiredValueMessage {
 				fmt.Println("A required value for " + Config.OSSpecificFlagString + flagName + " was not provided. Exiting.")
 				os.Exit(1)
 			}
