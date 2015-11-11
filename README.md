@@ -6,6 +6,7 @@ nflag enables you to do things like:
 1. Enforce required flags.
 2. Enable optional flags with both default values and no values (we will then provide a default value).
 3. Use OS-specific flag styling or whatever style you like.
+4. Print help message if no arguments are provided.
 
 ### OS-Specific Flag Styling (Defaults) ###
 
@@ -32,6 +33,8 @@ Example call:
 ./executable --help
 ```
 
+If the developer has specified during nflag configuration to show help if no arguments are passed, then the flags will be printed simply when doing `./executable`.
+
 ## Usage (Developer) ##
 
 You should probably just use `godoc` but I mean, whatever works for you I guess. This is mainly for convenience.
@@ -44,6 +47,7 @@ You should probably just use `godoc` but I mean, whatever works for you I guess.
 type ConfigOptions struct {
     OSSpecificFlags      bool
     OSSpecificFlagString string
+    ShowHelpIfNoArgs     bool
 }
 ```
 
@@ -90,6 +94,13 @@ This function will get the flag value and returns it, or an error if the flag do
 func Get(flagName string) interface{}, error
 ```
 
+We also have the following helper functions, all of which take the `flagName`:
+
+- `GetAsBool`: returns `bool, error`
+- `GetAsFloat64`: returns `float64, error`
+- `GetAsInt`: returns `int, error`
+- `GetAsString`: returns `string, error`
+
 #### Set ####
 
 This function is for setting a flag.
@@ -135,6 +146,12 @@ Let's pretend we set a flag via `Set` before, called `number-of-people`, which i
 ``` go
 intInterface, _ := nflag.Get("number-of-people")
 int := intInterface.(int)
+```
+
+Alternatively, you could do:
+
+``` go
+int, _ := nflag.GetAsInt("number-of-people")
 ```
 
 ### Set ###
