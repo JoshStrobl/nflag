@@ -38,6 +38,10 @@ func Configure(providedConfig ConfigOptions) {
 	if providedConfig.OSSpecificFlagString != "" { // If we are overriding OSSpecificFlagString
 		Config.OSSpecificFlagString = providedConfig.OSSpecificFlagString // Set OSSpecificFlagString to whatever is provided on config
 	}
+
+	if providedConfig.ShowHelpIfNoArgs { // If ShowHelpIfNoArgs was set to true
+		Config.ShowHelpIfNoArgs = true // Change to true
+	}
 }
 
 // Get
@@ -186,12 +190,15 @@ func Parse() {
 			PrintFlags() // Print the flags
 			os.Exit(1)
 		}
-	}
 
-	for flagName, _ := range Flags { // For each flagName in Flags
-		if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
-			ParseVal(flagName, "flag-not-provided")
+		for flagName, _ := range Flags { // For each flagName in Flags
+			if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
+				ParseVal(flagName, "flag-not-provided")
+			}
 		}
+	} else if Config.ShowHelpIfNoArgs { // If no arguments are passed and ShowHelpIfNoArgs is true
+		PrintFlags()
+		os.Exit(1)
 	}
 }
 
