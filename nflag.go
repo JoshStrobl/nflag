@@ -56,6 +56,62 @@ func Get(flagName string) (interface{}, error) {
 	return val, err
 }
 
+// #region GetAs functions
+
+// GetAsBool
+// This function will get the flag value and convert it to bool, or an error if the flag does not exist.
+func GetAsBool(flagName string) (bool, error) {
+	var flagValue bool
+	flagValueInterface, flagValueError := Get(flagName)
+
+	if flagValueError == nil { // If this flag does exist
+		flagValue = flagValueInterface.(bool) // Type inference to bool
+	}
+
+	return flagValue, flagValueError
+}
+
+// GetAsInt
+// This function will get the flag value and convert it to int, or an error if the flag does not exist.
+func GetAsInt(flagName string) (int, error) {
+	var flagValue int
+	flagValueInterface, flagValueError := Get(flagName)
+
+	if flagValueError == nil { // If this flag does exist
+		flagValue = flagValueInterface.(int) // Type inference to int
+	}
+
+	return flagValue, flagValueError
+}
+
+// GetAsFloat64
+// This function will get the flag value and convert it to float64, or an error if the flag does not exist.
+func GetAsFloat64(flagName string) (float64, error) {
+	var flagValue float64
+	flagValueInterface, flagValueError := Get(flagName)
+
+	if flagValueError == nil { // If this flag does exist
+		flagValue = flagValueInterface.(float64) // Type inference to float64
+	}
+
+	return flagValue, flagValueError
+}
+
+// GetAsString
+// This function will get the flag value and convert it to string, or an error if the flag does not exist.
+func GetAsString(flagName string) (string, error) {
+	var flagValue string
+	flagValueInterface, flagValueError := Get(flagName)
+
+	if flagValueError == nil { // If this flag does exist
+		flagValue = flagValueInterface.(string) // Type inference to string
+	}
+
+	return flagValue, flagValueError
+}
+
+// #endregion
+
 // Set
 // This function is for setting a flag.
 func Set(flagName string, providedFlag Flag) error {
