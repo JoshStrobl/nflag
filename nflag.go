@@ -135,7 +135,7 @@ func Set(flagName string, providedFlag Flag) error {
 	}
 
 	if isAllowedType { // If this is an allowed type
-		if (providedFlag.DefaultValue == nil) && (providedFlag.AllowNothing) { // If no default value was provided and we are allowing nothing
+		if providedFlag.DefaultValue == nil { // If no default value was provided
 			if providedFlag.Type == "bool" { // If the type is bool
 				providedFlag.DefaultValue = false
 			} else if providedFlag.Type == "float64" { // If the type is float64
