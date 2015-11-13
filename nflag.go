@@ -145,7 +145,7 @@ func Set(flagName string, providedFlag Flag) error {
 			} else if providedFlag.Type == "string" {
 				providedFlag.DefaultValue = ""
 			}
-		} else if (providedFlag.DefaultValue != nil) && (providedFlag.AllowNothing == false) { // If a Default value was provided
+		} else if (providedFlag.DefaultValue != nil) && (!providedFlag.AllowNothing) { // If a Default value was provided
 			providedFlag.AllowNothing = true                                             // Enforce AllowNothing since a default value is provided
 			if providedFlag.Type != reflect.TypeOf(providedFlag.DefaultValue).String() { // If the Type and DefaultValue aren't the same type
 				errorResponse = errors.New("Mismatch Flag and DefaultValue types.")
@@ -190,15 +190,16 @@ func Parse() {
 			PrintFlags() // Print the flags
 			os.Exit(1)
 		}
-
-		for flagName, _ := range Flags { // For each flagName in Flags
-			if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
-				ParseVal(flagName, "flag-not-provided")
-			}
-		}
 	} else if Config.ShowHelpIfNoArgs { // If no arguments are passed and ShowHelpIfNoArgs is true
 		PrintFlags()
 		os.Exit(1)
+	}
+
+	// Executed in the event some or no flags are passed and we haven't exited
+	for flagName, _ := range Flags { // For each flagName in Flags
+		if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
+			ParseVal(flagName, "flag-not-provided")
+		}
 	}
 }
 
