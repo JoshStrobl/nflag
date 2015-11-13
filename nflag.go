@@ -223,7 +223,7 @@ func ParseVal(flagName string, flagValue string) {
 			}
 
 			if conversionError != nil { // If there was a conversionError
-				fmt.Println("An incorrect value was provided when using " + Config.OSSpecificFlagString + "flagName . Exiting.")
+				fmt.Println("An incorrect value was provided when using " + Config.OSSpecificFlagString + flagName + ". Exiting.")
 				os.Exit(1)
 			}
 		} else { // If no value was provided by the user
