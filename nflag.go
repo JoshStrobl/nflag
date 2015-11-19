@@ -114,7 +114,20 @@ func GetAsString(flagName string) (string, error) {
 	return flagValue, flagValueError
 }
 
-// #endregion
+// IsDefaultValue
+// This function will return a boolean as to whether or not the value of the flag is the same as DefaultValue
+func IsDefaultValue(flagName string) (bool, error) {
+	var isDefaultValue bool
+	flagValue, flagValueError := Get(flagName)
+
+	if flagValueError == nil { // If the flag exists
+		if Flags[flagName].DefaultValue == flagValue { // If the DefaultValue is the same as the flagValue
+			isDefaultValue = true // Change isDefaultValue to true
+		}
+	}
+
+	return isDefaultValue, flagValueError
+}
 
 // Set
 // This function is for setting a flag.
