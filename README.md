@@ -195,10 +195,9 @@ Calling `PrintFlags` will output your flags in the following format:
 ```
 Usage: --example=value
 The following options are available:
-{Config.OSSpecificFlagString}{flagName} {Flag Type}
-    {Flag Descriptor}
-    {If Default Value - "Default Value: {Flag Default Value}"}
-    {"Allows Providing Only Flag: " {Flag AllowsNothing}}
+{Config.OSSpecificFlagString}{flagName} {Flag Descriptor}
+{If Default Value - "Default Value: {Flag Default Value}"}
+{If Allows Nothing - "Allows Providing Only Flag"}
 ```
 
 **Example**:
@@ -206,12 +205,8 @@ The following options are available:
 ``` bash
 Usage: --example=value
 The following options are available:
---required bool
-	This is to test required flag.
-	Allows Providing Only Flag: false
+--required    This is to test required flag.
+Allows Providing Only Flag
 
---test string
-	This is a test flag.
-	Default Value: defaultval
-	Allows Providing Only Flag: true
+--test        This is a test flag.
 ```
