@@ -9,12 +9,14 @@ import (
 	"os"
 	"reflect"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 var Config ConfigOptions
 var Flags map[string]Flag
+var LongestFlagLength int
 
 // Package Init
 func init() {
@@ -167,6 +169,12 @@ func Set(flagName string, providedFlag Flag) error {
 
 		if errorResponse == nil { // If there was no error
 			Flags[flagName] = providedFlag // Set the flag name in Flags to the providedFlag struct
+
+			flagNameLength := len(flagName) // Get the length of the flagName
+
+			if LongestFlagLength < flagNameLength { // If the currently stored LongestFlagLength is less than the current flagNameLength
+				LongestFlagLength = (flagNameLength + 4)// Change to this flagNameLength, adding 4 for spacing for longest flag
+			}
 		}
 	} else { // If this is a non-allowed type
 		errorResponse = errors.New("Type is not allowed. Please use bool, float64, int, or string.")
@@ -279,15 +287,36 @@ func PrintFlags() {
 	fmt.Println("Usage: " + Config.OSSpecificFlagString + "example=value")
 	fmt.Println("The following options are available:")
 
-	for flagName, flag := range Flags { // For each flagName and trimmedFlag struct in Flags
-		fmt.Println(Config.OSSpecificFlagString + flagName + " " + flag.Type)
-		fmt.Println("\t" + flag.Descriptor)
+	// #region Sort Flags
 
+	var flagNames []string
+
+	for flagName, _ := range Flags { // For each flagName in Flags
+		flagNames = append(flagNames, flagName) // Append flagName
+	}
+
+	sort.Strings(flagNames) // Sort the flagNames
+
+	// #endregion
+
+	for _, flagName := range flagNames { // For each flagName and trimmedFlag struct in Flags
+		flag := Flags[flagName] // Get the flag
+
+		thisFlagNameLength := len(flagName) // Get the length of this flagName
+		flagLengthDiff := (LongestFlagLength - thisFlagNameLength) // Get the difference in flag name length compared to the longest one
+
+		fmt.Println(Config.OSSpecificFlagString + flagName + strings.Repeat(" ", flagLengthDiff) + flag.Descriptor) // Output the flag, creating enough spacing to along descriptor
 		if flag.DefaultValue != nil { // If DefaultValue is not nil
-			fmt.Println("\t" + "Default Value: " + reflect.ValueOf(flag.DefaultValue).String())
+
+			if (flag.DefaultValue != "") && (flag.DefaultValue != false) { // If the default value is not an empty string and not false
+				fmt.Println("Default Value: ", flag.DefaultValue)
+			}
 		}
 
-		fmt.Println("\t" + "Allows Providing Only Flag: " + strconv.FormatBool(flag.AllowNothing))
+		if flag.AllowNothing { // If we are allowing to pass only the flag
+			fmt.Println("Allows Providing Only Flag")
+		}
+
 		fmt.Println("")
 	}
 }
