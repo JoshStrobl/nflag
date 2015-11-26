@@ -101,6 +101,14 @@ We also have the following helper functions, all of which take the `flagName`:
 - `GetAsInt`: returns `int, error`
 - `GetAsString`: returns `string, error`
 
+#### IsDefaultValue ####
+
+This function will return a boolean as to whether or not the value of the flag is the same as DefaultValue.
+
+``` go
+func IsDefaultValue(flagName string) (bool, error)
+```
+
 #### Set ####
 
 This function is for setting a flag.
