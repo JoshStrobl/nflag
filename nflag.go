@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"sort"
@@ -40,6 +41,8 @@ func Configure(providedConfig ConfigOptions) {
 	if providedConfig.OSSpecificFlagString != "" { // If we are overriding OSSpecificFlagString
 		Config.OSSpecificFlagString = providedConfig.OSSpecificFlagString // Set OSSpecificFlagString to whatever is provided on config
 	}
+
+	Config.ProgramDescription = providedConfig.ProgramDescription // Assign providedConfig program description (if any) to Config
 
 	if providedConfig.ShowHelpIfNoArgs { // If ShowHelpIfNoArgs was set to true
 		Config.ShowHelpIfNoArgs = true // Change to true
@@ -173,7 +176,7 @@ func Set(flagName string, providedFlag Flag) error {
 			flagNameLength := len(flagName) // Get the length of the flagName
 
 			if LongestFlagLength < flagNameLength { // If the currently stored LongestFlagLength is less than the current flagNameLength
-				LongestFlagLength = (flagNameLength + 4)// Change to this flagNameLength, adding 4 for spacing for longest flag
+				LongestFlagLength = (flagNameLength + 4) // Change to this flagNameLength, adding 4 for spacing for longest flag
 			}
 		}
 	} else { // If this is a non-allowed type
@@ -284,7 +287,11 @@ func ParseVal(flagName string, flagValue string) {
 // PrintFlags
 // This function will print all the flags that are set and their defaults
 func PrintFlags() {
-	fmt.Println("Usage: " + Config.OSSpecificFlagString + "example=value")
+	if Config.ProgramDescription != "" { // If we were provided a description of the program
+		fmt.Println(Config.ProgramDescription + "\n")
+	}
+
+	fmt.Println("Usage: " + filepath.Base(os.Args[0]) + " " + Config.OSSpecificFlagString + "novalueflag" + " " + Config.OSSpecificFlagString + "valueflag=value")
 	fmt.Println("The following options are available:")
 
 	// #region Sort Flags
@@ -302,11 +309,11 @@ func PrintFlags() {
 	for _, flagName := range flagNames { // For each flagName and trimmedFlag struct in Flags
 		flag := Flags[flagName] // Get the flag
 
-		thisFlagNameLength := len(flagName) // Get the length of this flagName
+		thisFlagNameLength := len(flagName)                        // Get the length of this flagName
 		flagLengthDiff := (LongestFlagLength - thisFlagNameLength) // Get the difference in flag name length compared to the longest one
 
 		fmt.Println(Config.OSSpecificFlagString + flagName + strings.Repeat(" ", flagLengthDiff) + flag.Descriptor) // Output the flag, creating enough spacing to along descriptor
-		if flag.DefaultValue != nil { // If DefaultValue is not nil
+		if flag.DefaultValue != nil {                                                                               // If DefaultValue is not nil
 
 			if (flag.DefaultValue != "") && (flag.DefaultValue != false) { // If the default value is not an empty string and not false
 				fmt.Println("Default Value: ", flag.DefaultValue)

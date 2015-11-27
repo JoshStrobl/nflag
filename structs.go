@@ -4,6 +4,7 @@ type ConfigOptions struct {
 	OSSpecificFlags      bool
 	OSSpecificFlagString string
 	ShowHelpIfNoArgs     bool
+	ProgramDescription   string
 }
 
 // Flag is used in the Config string map

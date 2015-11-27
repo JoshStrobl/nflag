@@ -7,6 +7,7 @@ nflag enables you to do things like:
 2. Enable optional flags with both default values and no values (we will then provide a default value).
 3. Use OS-specific flag styling or whatever style you like.
 4. Print help message if no arguments are provided.
+5. Add a description of your program that gets automatically outputted with a help message.
 
 ### OS-Specific Flag Styling (Defaults) ###
 
@@ -47,6 +48,7 @@ You should probably just use `godoc` but I mean, whatever works for you I guess.
 type ConfigOptions struct {
     OSSpecificFlags      bool
     OSSpecificFlagString string
+    ProgramDescription   string
     ShowHelpIfNoArgs     bool
 }
 ```
@@ -85,6 +87,8 @@ This function is for configuration of nflag prior to usage. This is an **optiona
 ``` go
 func Configure(providedConfig ConfigOptions)
 ```
+
+If you provide a `ProgramDescription` value, we will output that in the help message.
 
 #### Get ####
 
@@ -201,6 +205,8 @@ nflag.Set("nothin", nflag.Flag{
 Calling `PrintFlags` will output your flags in the following format:
 
 ```
+{If Has ProgramDescription}
+
 Usage: --example=value
 The following options are available:
 {Config.OSSpecificFlagString}{flagName} {Flag Descriptor}
@@ -211,7 +217,9 @@ The following options are available:
 **Example**:
 
 ``` bash
-Usage: --example=value
+prog is a cool program that lets you do cool things!
+
+Usage: --novalueflag --valueflag=value
 The following options are available:
 --required    This is to test required flag.
 Allows Providing Only Flag
