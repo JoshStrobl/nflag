@@ -3,6 +3,7 @@
 nflag is an open source alternative to Golang's flag package. nflag allows flag styling, type option simplification, and allowance of empty values.
 
 nflag enables you to do things like:
+
 1. Enforce required flags.
 2. Enable optional flags with both default values and no values (we will then provide a default value).
 3. Use OS-specific flag styling or whatever style you like.

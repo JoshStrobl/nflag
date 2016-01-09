@@ -52,12 +52,21 @@ func Configure(providedConfig ConfigOptions) {
 // Get
 // This function will get the flag value and returns it, or an error if the flag does not exist.
 func Get(flagName string) (interface{}, error) {
+	if Flags == nil { // If Flags hasn't been declared yet
+		Parse() // Immediately call Parse
+	}
+
 	flag, exists := Flags[flagName] // Get the trimmedFlag and the exists bool of this flagName in Flags
 	var val interface{}
 	var err error
 
 	if exists { // If the flag exists
-		val = flag.Value
+
+		if flag.Value != nil { // If the value of the flag is not nil
+			val = flag.Value
+		} else { // If the flag of the value is nil
+			err = errors.New("Value of " + flagName + " is nil.")
+		}
 	} else {
 		err = errors.New("Flag does not exist.")
 	}
