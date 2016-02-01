@@ -16,6 +16,10 @@ nflag enables you to do things like:
 
 **Windows:** If you are using a Windows operating system, we default to using `/` in front of the flag name.
 
+## Contributing ##
+
+This project leverages CodeUtils for development and adopts the CodeUtils Usage Spec. To learn how to contribute to this project and set up CodeUtils, read [here](https://github.com/StroblIndustries/CodeUtils/blob/master/CodeUtils-Usage-Spec.md).
+
 ## Usage (User) ##
 
 In the example below, we are:
