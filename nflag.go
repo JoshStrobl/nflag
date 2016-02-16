@@ -15,6 +15,7 @@ import (
 var Config ConfigOptions
 var Flags map[string]Flag
 var LongestFlagLength int
+var OutputHelp bool // Bool whether we should output help (after parse flag detection)
 
 // Package Init
 func init() {

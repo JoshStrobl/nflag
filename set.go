@@ -37,9 +37,10 @@ func Set(flagName string, providedFlag Flag) error {
 			} else if providedFlag.Type == "string" {
 				providedFlag.DefaultValue = ""
 			}
-		} else if (providedFlag.DefaultValue != nil) && (!providedFlag.AllowNothing) { // If a Default value was provided
-			providedFlag.AllowNothing = true                                             // Enforce AllowNothing since a default value is provided
-			if providedFlag.Type != reflect.TypeOf(providedFlag.DefaultValue).String() { // If the Type and DefaultValue aren't the same type
+		} else { // If a Default value was provided
+			if providedFlag.Type == reflect.TypeOf(providedFlag.DefaultValue).String() { // If the Type and DefaultValue are the same type
+				providedFlag.AllowNothing = true // Enforce AllowNothing since a default value is provided
+			} else { // If the types are not the same
 				errorResponse = errors.New("Mismatch Flag and DefaultValue types.")
 			}
 		}

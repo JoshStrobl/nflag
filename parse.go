@@ -13,11 +13,8 @@ import (
 // This function will parse input for flags
 func Parse() {
 	providedFlags := os.Args[1:] // ProvidedFlags start at index 1 (after binary name)
-	outputHelp := true           // Define outputHelp as true by default
 
-	if (len(providedFlags) != 0) && (providedFlags[0] != (Config.OSSpecificFlagString + "help")) { // If the first providedFlag is not help
-		outputHelp = false // Change outputHelp to false
-
+	if (len(providedFlags) != 0) && (providedFlags[0] != (Config.OSSpecificFlagString + "help")) { // If there was no flags or the first providedFlag is not help
 		for _, flag := range providedFlags { // For each flag provided
 			flagNameValueSplit := strings.Split(flag, "=")                                          // Split the flag name and the value
 			flagName := strings.Replace(flagNameValueSplit[0], Config.OSSpecificFlagString, "", -1) // Get the flagName and remove the OSSpecificFlagString
@@ -35,18 +32,25 @@ func Parse() {
 
 			ParseVal(flagName, flagValue) // Parse the value
 		}
+	} else { // If no flags were provided or help was
+		if len(providedFlags) == 0 { // If no flags were provided
+			if !Config.ShowHelpIfNoArgs { // If we should not show help if no args
+				for flagName, _ := range Flags { // For each flagName in Flags
+					if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed)
+						ParseVal(flagName, "flag-not-provided")
+					}
+				}
+			} else { // If we should show help if no args
+				OutputHelp = true // Change OutputHelp to true
+			}
+		} else { // If help was provided
+			OutputHelp = true // Change OutputHelp to true
+		}
 	}
 
-	if outputHelp { // If we are outputting help flags
+	if OutputHelp { // If we are outputting help flags
 		PrintFlags()
 		os.Exit(1)
-	} else {
-		// Executed in the event some or no flags are passed and we haven't exited
-		for flagName, _ := range Flags { // For each flagName in Flags
-			if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed via
-				ParseVal(flagName, "flag-not-provided")
-			}
-		}
 	}
 }
 
@@ -95,8 +99,8 @@ func ParseVal(flagName string, flagValue string) {
 			}
 
 			if returnRequiredValueMessage {
-				fmt.Println("A required value for " + Config.OSSpecificFlagString + flagName + " was not provided. Exiting.")
-				os.Exit(1)
+				fmt.Println("A required value for " + Config.OSSpecificFlagString + flagName + " was not provided.")
+				OutputHelp = true // Redefine OutputHelp to true
 			}
 		}
 
