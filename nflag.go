@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
 )
@@ -19,31 +18,19 @@ var OutputHelp bool // Bool whether we should output help (after parse flag dete
 
 // Package Init
 func init() {
-	Flags = make(map[string]Flag)      // Make the Flags map
-	Config.OSSpecificFlags = true      // Default to being true
-	Config.OSSpecificFlagString = "--" // Default to using a double dash for declaring flags
-
-	if runtime.GOOS == "windows" { // If we are on Windows
-		Config.OSSpecificFlagString = "/" // Use a slash, since Windows likes to be "special"
-	}
+	Flags = make(map[string]Flag) // Make the Flags map
+	SetOSFlagString()             // Default to using appropriate OS flag string
 }
 
 // Configure
 // This function is for configuration of nflag prior to usage.
 func Configure(providedConfig ConfigOptions) {
-	if !providedConfig.OSSpecificFlags { // If we are overriding OSSpecificFlags
-		Config.OSSpecificFlags = false
-		Config.OSSpecificFlagString = "--" // Enforce --
-	}
+	Config = providedConfig // Set Config to providedConfig
 
-	if providedConfig.OSSpecificFlagString != "" { // If we are overriding OSSpecificFlagString
-		Config.OSSpecificFlagString = providedConfig.OSSpecificFlagString // Set OSSpecificFlagString to whatever is provided on config
-	}
-
-	Config.ProgramDescription = providedConfig.ProgramDescription // Assign providedConfig program description (if any) to Config
-
-	if providedConfig.ShowHelpIfNoArgs { // If ShowHelpIfNoArgs was set to true
-		Config.ShowHelpIfNoArgs = true // Change to true
+	if !Config.OSSpecificFlags { // If we are overriding OSSpecificFlags
+		if Config.OSSpecificFlagString == "" { // If no flag string was provided
+			SetOSFlagString() // Set to appropriate OS flag string
+		}
 	}
 }
 

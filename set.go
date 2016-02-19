@@ -5,6 +5,7 @@ package nflag
 import (
 	"errors"
 	"reflect"
+	"runtime"
 )
 
 // Set
@@ -59,4 +60,16 @@ func Set(flagName string, providedFlag Flag) error {
 	}
 
 	return errorResponse
+}
+
+// SetOSFlagString
+// This function will set the nflag Config's OSSpecificFlagString to the one appropriate for the OS
+func SetOSFlagString() {
+	Config.OSSpecificFlags = true // Default to being true
+
+	if runtime.GOOS != "windows" { // If we are not on Windows
+		Config.OSSpecificFlagString = "--" // Default to using a double dash for declaring flags
+	} else { // If we are on Windows
+		Config.OSSpecificFlagString = "/" // Use a slash, since Windows likes to be "special"
+	}
 }
