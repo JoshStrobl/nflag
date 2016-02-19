@@ -41,7 +41,8 @@ func Set(flagName string, providedFlag Flag) error {
 			}
 
 			if errorResponse == nil { // If there was no error
-				Flags[flagName] = providedFlag // Set the flag name in Flags to the providedFlag struct
+				providedFlag.Value = "flag-not-provided" // Default Value to flag-not-provided so we can differ between when a flag isn't provided v.s. no value
+				Flags[flagName] = providedFlag           // Set the flag name in Flags to the providedFlag struct
 
 				flagNameLength := len(flagName) // Get the length of the flagName
 
@@ -62,13 +63,13 @@ func Set(flagName string, providedFlag Flag) error {
 }
 
 // SetOSFlagString
-// This function will set the nflag Config's OSSpecificFlagString to the one appropriate for the OS
+// This function will set the nflag Config's FlagString to the one appropriate for the OS
 func SetOSFlagString() {
-	Config.OSSpecificFlags = true // Default to being true
+	Config.OSSpecificFlag = true // Default to being true
 
 	if runtime.GOOS != "windows" { // If we are not on Windows
-		Config.OSSpecificFlagString = "--" // Default to using a double dash for declaring flags
+		Config.FlagString = "--" // Default to using a double dash for declaring flags
 	} else { // If we are on Windows
-		Config.OSSpecificFlagString = "/" // Use a slash, since Windows likes to be "special"
+		Config.FlagString = "/" // Use a slash, since Windows likes to be "special"
 	}
 }

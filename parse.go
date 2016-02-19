@@ -12,101 +12,73 @@ import (
 // Parse
 // This function will parse input for flags
 func Parse() {
-	providedFlags := os.Args[1:] // ProvidedFlags start at index 1 (after binary name)
+	flagsToParse := Flags                  // Parse all flags by default
+	providedFlags := os.Args[1:]           // ProvidedFlags start at index 1 (after binary name)
+	lenProvidedFlags := len(providedFlags) // Get the length of the providedFlags
 
-	if (len(providedFlags) != 0) && (providedFlags[0] != (Config.OSSpecificFlagString + "help")) { // If there was no flags or the first providedFlag is not help
+	if (lenProvidedFlags == 0 && Config.ShowHelpIfNoArgs) || ((lenProvidedFlags != 0) && (providedFlags[0] == Config.FlagString+"help")) { // If no args were provided or the first was help, and we should show help if no args
+		PrintFlags() // Output help / print flags
+	} else if lenProvidedFlags != 0 { // If flags were provided
 		for _, flag := range providedFlags { // For each flag provided
-			flagNameValueSplit := strings.Split(flag, "=")                                          // Split the flag name and the value
-			flagName := strings.Replace(flagNameValueSplit[0], Config.OSSpecificFlagString, "", -1) // Get the flagName and remove the OSSpecificFlagString
-			flagValue := ""                                                                         // Default to nothing
+			flagNameValueSplit := strings.Split(flag, "=")                                // Split the flag name and the value
+			flagName := strings.Replace(flagNameValueSplit[0], Config.FlagString, "", -1) // Get the flagName and remove the FlagString
 
-			if len(flagNameValueSplit) == 2 { // If a value was provided
-				flagValue = flagNameValueSplit[1] // Set to the value in flagNameValueSplit
-			} else { // If the flag was passed but no value
-				trimmedFlag, exists := Flags[flagName] // Get the trimmedFlag and the exists bool of this flagName in Flags
+			existingFlag, exists := flagsToParse[flagName] // Get the existing flag and the exists bool
 
-				if exists && (trimmedFlag.Type == "bool") { // If the flag exists and its type is bool
-					flagValue = "true" // By passing just --flag, it implies --flag is true
+			if exists { // If this flag exists
+				if len(flagNameValueSplit) == 2 { // If a value was provided
+					existingFlag.Value = flagNameValueSplit[1] // Set to the value in flagNameValueSplit
+				} else { // If no value was provided
+					existingFlag.Value = "" // Set to nothing so we can differ between a flag passed and not passed
 				}
-			}
 
-			ParseVal(flagName, flagValue) // Parse the value
-		}
-	} else { // If no flags were provided or help was
-		if len(providedFlags) == 0 { // If no flags were provided
-			if !Config.ShowHelpIfNoArgs { // If we should not show help if no args
-				for flagName, _ := range Flags { // For each flagName in Flags
-					if Flags[flagName].Value == nil { // If no value is set for this Flag (which happens if it wasn't parsed)
-						ParseVal(flagName, "flag-not-provided")
-					}
-				}
-			} else { // If we should show help if no args
-				OutputHelp = true // Change OutputHelp to true
+				flagsToParse[flagName] = existingFlag // Add this flag name and struct to flagsToParse
+			} else { // If the Flag does not exist
+				fmt.Println(Config.FlagString + flagName + " does not exist.")
+				PrintFlags()
 			}
-		} else { // If help was provided
-			OutputHelp = true // Change OutputHelp to true
 		}
 	}
 
-	if OutputHelp { // If we are outputting help flags
-		PrintFlags()
-		os.Exit(1)
-	}
-}
+	for flagName, flag := range flagsToParse { // For each flagName and flag in flagsToParse
+		if flag.Value != "flag-not-provided" { // If the Value was provided / this flag was passed
+			if flag.Value != "" { // If a value was provided when using this flag
+				var conversionError error // Define conversionError as any error from not correctly converting the value to the type
+				flagValueAsString := flag.Value.(string)
 
-// ParseVal
-// This function will check Flags for the provided flag and parse the provided value
-func ParseVal(flagName string, flagValue string) {
-	trimmedFlag, exists := Flags[flagName] // Get the trimmedFlag and the exists bool of this flagName in Flags
+				if flag.Type == "bool" { // If the type is bool
+					flag.Value, conversionError = strconv.ParseBool(flagValueAsString) // Convert to bool
+				} else if flag.Type == "float64" { // If the type is float64
+					flag.Value, conversionError = strconv.ParseFloat(flagValueAsString, 64) // Convert to float64
+				} else if flag.Type == "int" { // If the type is int
+					flag.Value, conversionError = strconv.Atoi(flagValueAsString) // Convert to int
+				}
 
-	if exists { // If the flag exists
-		if (flagValue != "") && (flagValue != "flag-not-provided") { // If a value was defined
-			var conversionError error // Define conversionError as any error from not correctly converting the value to the type
-
-			if trimmedFlag.Type == "bool" { // If the type is bool
-				trimmedFlag.Value, conversionError = strconv.ParseBool(flagValue) // Convert to bool
-			} else if trimmedFlag.Type == "float64" { // If the type is float64
-				trimmedFlag.Value, conversionError = strconv.ParseFloat(flagValue, 64) // Convert to float64
-			} else if trimmedFlag.Type == "int" { // If the type is int
-				trimmedFlag.Value, conversionError = strconv.Atoi(flagValue) // Convert to int
-			} else { // Remaining type, being int
-				trimmedFlag.Value = flagValue
-			}
-
-			if conversionError != nil { // If there was a conversionError
-				fmt.Println("An incorrect value was provided when using " + Config.OSSpecificFlagString + flagName + ". Exiting.")
-				os.Exit(1)
-			}
-		} else { // If no value was provided by the user
-			returnRequiredValueMessage := false
-
-			if flagValue == "" { // If the flag was provided by the user but no content
-				if trimmedFlag.AllowNothing { // If providing no content is permitted
-					if trimmedFlag.Type == "bool" { // If the flag is bool
-						trimmedFlag.Value = true // Force true
-					} else { // If the flag is not bool
-						trimmedFlag.Value = trimmedFlag.DefaultValue // Set to defaultvalue
+				if conversionError != nil { // If there was a conversionError
+					fmt.Println("An incorrect value was provided when using " + Config.FlagString + flagName + ".")
+					PrintFlags()
+				}
+			} else { // If a value was not provided when using this flag
+				if flag.AllowNothing { // If we are allowing nothing to be defined
+					if flag.Type == "bool" { // If the flag.Type is bool
+						flag.Value = true // Set to true
+					} else { // If the flag.Type is not bool
+						flag.Value = flag.DefaultValue // Change to DefaultValue
 					}
-				} else { // If providing no content is NOT permitted
-					returnRequiredValueMessage = true
-				}
-			} else { // If this flag was not provided
-				if !trimmedFlag.Required { // If the flag is NOT required
-					trimmedFlag.Value = trimmedFlag.DefaultValue // Set the value to the default
-				} else { // If the flag IS required
-					returnRequiredValueMessage = true
+				} else { // If we do not allow anything
+					fmt.Println("A value must be provided when using " + Config.FlagString + flagName)
+					PrintFlags()
 				}
 			}
-
-			if returnRequiredValueMessage {
-				fmt.Println("A required value for " + Config.OSSpecificFlagString + flagName + " was not provided.")
-				OutputHelp = true // Redefine OutputHelp to true
+		} else { // If the flag was not provided
+			if !flag.Required { // If the flag is NOT required
+				flag.Value = flag.DefaultValue // Change to DefaultValue
+			} else { // If the flag was not passed but is required
+				fmt.Println("A required value for " + Config.FlagString + flagName + " was not provided.")
+				PrintFlags()
 			}
 		}
 
-		Flags[flagName] = trimmedFlag // Update the map
-	} else { // If the flag does not exist.
-		fmt.Println(Config.OSSpecificFlagString + flagName + " does not exist. Exiting.")
-		os.Exit(1)
+		Flags[flagName] = flag // Update the Flag if we get to this point
 	}
 }

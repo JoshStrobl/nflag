@@ -31,7 +31,7 @@ In the example below, we are:
 ./executable --build-for=linux_amd64 --enable-awesomeness
 ```
 
-Calling `help`, prepended by the OSSpecificFlagString, will print the flags.
+Calling `help`, prepended by the FlagString, will print the flags.
 
 Example call:
 
@@ -51,10 +51,10 @@ You should probably just use `godoc` but I mean, whatever works for you I guess.
 
 ``` go
 type ConfigOptions struct {
-    OSSpecificFlags      bool
-    OSSpecificFlagString string
-    ProgramDescription   string
-    ShowHelpIfNoArgs     bool
+	OSSpecificFlag     bool
+	FlagString         string
+	ShowHelpIfNoArgs   bool
+	ProgramDescription string
 }
 ```
 
@@ -153,7 +153,7 @@ func PrintFlags()
 The below `Configure` call will change `--` to `-`:
 
 ``` go
-    nflag.Configure(nflag.ConfigOptions{OSSpecificFlagString: "-"})
+    nflag.Configure(nflag.ConfigOptions{FlagString: "-"})
 ```
 
 ### Get ###
@@ -214,7 +214,7 @@ Calling `PrintFlags` will output your flags in the following format:
 
 Usage: --example=value
 The following options are available:
-{Config.OSSpecificFlagString}{flagName} {Flag Descriptor}
+{Config.FlagString}{flagName} {Flag Descriptor}
 {If Default Value - "Default Value: {Flag Default Value}"}
 {If Allows Nothing - "Allows Providing Only Flag"}
 ```

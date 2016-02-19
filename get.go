@@ -14,8 +14,7 @@ func Get(flagName string) (interface{}, error) {
 	var err error
 
 	if exists { // If the flag exists
-
-		if flag.Value != nil { // If the value of the flag is not nil
+		if flag.Value != "flag-not-provided" { // If the value of the flag is not "flag-not-provided"
 			val = flag.Value
 		} else { // If the flag of the value is nil
 			err = errors.New("Value of " + flagName + " is nil.")
