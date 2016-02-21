@@ -9,8 +9,7 @@ import (
 	"strings"
 )
 
-// Parse
-// This function will parse input for flags
+// Parse will parse input for flags
 func Parse() {
 	flagsToParse := Flags                  // Parse all flags by default
 	providedFlags := os.Args[1:]           // ProvidedFlags start at index 1 (after binary name)

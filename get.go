@@ -6,8 +6,7 @@ import (
 	"errors"
 )
 
-// Get
-// This function will get the flag value and returns it, or an error if the flag does not exist.
+// Get will get the flag value and returns it, or an error if the flag does not exist.
 func Get(flagName string) (interface{}, error) {
 	flag, exists := Flags[flagName] // Get the trimmedFlag and the exists bool of this flagName in Flags
 	var val interface{}
@@ -28,8 +27,7 @@ func Get(flagName string) (interface{}, error) {
 
 // #region GetAs functions
 
-// GetAsBool
-// This function will get the flag value and convert it to bool, or an error if the flag does not exist.
+// GetAsBool will get the flag value and convert it to bool, or an error if the flag does not exist.
 func GetAsBool(flagName string) (bool, error) {
 	var flagValue bool
 	flagValueInterface, flagValueError := Get(flagName)
@@ -41,8 +39,7 @@ func GetAsBool(flagName string) (bool, error) {
 	return flagValue, flagValueError
 }
 
-// GetAsInt
-// This function will get the flag value and convert it to int, or an error if the flag does not exist.
+// GetAsInt will get the flag value and convert it to int, or an error if the flag does not exist.
 func GetAsInt(flagName string) (int, error) {
 	var flagValue int
 	flagValueInterface, flagValueError := Get(flagName)
@@ -54,8 +51,7 @@ func GetAsInt(flagName string) (int, error) {
 	return flagValue, flagValueError
 }
 
-// GetAsFloat64
-// This function will get the flag value and convert it to float64, or an error if the flag does not exist.
+// GetAsFloat64 will get the flag value and convert it to float64, or an error if the flag does not exist.
 func GetAsFloat64(flagName string) (float64, error) {
 	var flagValue float64
 	flagValueInterface, flagValueError := Get(flagName)
@@ -67,8 +63,7 @@ func GetAsFloat64(flagName string) (float64, error) {
 	return flagValue, flagValueError
 }
 
-// GetAsString
-// This function will get the flag value and convert it to string, or an error if the flag does not exist.
+// GetAsString will get the flag value and convert it to string, or an error if the flag does not exist.
 func GetAsString(flagName string) (string, error) {
 	var flagValue string
 	flagValueInterface, flagValueError := Get(flagName)
@@ -80,8 +75,7 @@ func GetAsString(flagName string) (string, error) {
 	return flagValue, flagValueError
 }
 
-// IsDefaultValue
-// This function will return a boolean as to whether or not the value of the flag is the same as DefaultValue
+// IsDefaultValue will return a boolean as to whether or not the value of the flag is the same as DefaultValue
 func IsDefaultValue(flagName string) (bool, error) {
 	var isDefaultValue bool
 	flagValue, flagValueError := Get(flagName)

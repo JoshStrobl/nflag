@@ -11,10 +11,14 @@ import (
 	"strings"
 )
 
+// Config is the config options of nflag
 var Config ConfigOptions
+
+// Flags is a map of flags registered with nflag
 var Flags map[string]Flag
+
+// LongestFlagLength is an length of the longest Flag, used to ensure we output help cleanly.
 var LongestFlagLength int
-var OutputHelp bool // Bool whether we should output help (after parse flag detection)
 
 // Package Init
 func init() {
@@ -22,8 +26,7 @@ func init() {
 	SetOSFlagString()             // Default to using appropriate OS flag string
 }
 
-// Configure
-// This function is for configuration of nflag prior to usage.
+// Configure is for configuration of nflag prior to usage.
 func Configure(providedConfig ConfigOptions) {
 	Config = providedConfig // Set Config to providedConfig
 
@@ -34,8 +37,7 @@ func Configure(providedConfig ConfigOptions) {
 	}
 }
 
-// PrintFlags
-// This function will print all the flags that are set and their defaults
+// PrintFlags will print all the flags that are set and their defaults
 func PrintFlags() {
 	if Config.ProgramDescription != "" { // If we were provided a description of the program
 		fmt.Println(Config.ProgramDescription + "\n")
@@ -48,7 +50,7 @@ func PrintFlags() {
 
 	var flagNames []string
 
-	for flagName, _ := range Flags { // For each flagName in Flags
+	for flagName := range Flags { // For each flagName in Flags
 		flagNames = append(flagNames, flagName) // Append flagName
 	}
 

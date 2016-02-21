@@ -8,8 +8,7 @@ import (
 	"runtime"
 )
 
-// Set
-// This function is for setting a flag.
+// Set is for setting a flag.
 func Set(flagName string, providedFlag Flag) error {
 	var errorResponse error
 	var typeFound bool // Default typeFound to false
@@ -62,8 +61,7 @@ func Set(flagName string, providedFlag Flag) error {
 	return errorResponse
 }
 
-// SetOSFlagString
-// This function will set the nflag Config's FlagString to the one appropriate for the OS
+// SetOSFlagString will set the nflag Config's FlagString to the one appropriate for the OS
 func SetOSFlagString() {
 	Config.OSSpecificFlag = true // Default to being true
 
