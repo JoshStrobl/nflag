@@ -2,7 +2,6 @@ package nflag
 
 // ConfigOptions are the available options for nflag
 type ConfigOptions struct {
-	OSSpecificFlag     bool
 	FlagString         string
 	ShowHelpIfNoArgs   bool
 	ProgramDescription string
