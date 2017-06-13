@@ -23,18 +23,11 @@ var LongestFlagLength int
 // Package Init
 func init() {
 	Flags = make(map[string]Flag) // Make the Flags map
-	SetOSFlagString()             // Default to using appropriate OS flag string
 }
 
 // Configure is for configuration of nflag prior to usage.
 func Configure(providedConfig ConfigOptions) {
 	Config = providedConfig // Set Config to providedConfig
-
-	if !Config.OSSpecificFlag { // If we are overriding OSSpecificFlag
-		if Config.FlagString == "" { // If no flag string was provided
-			SetOSFlagString() // Set to appropriate OS flag string
-		}
-	}
 }
 
 // PrintFlags will print all the flags that are set and their defaults
@@ -43,7 +36,7 @@ func PrintFlags() {
 		fmt.Println(Config.ProgramDescription + "\n")
 	}
 
-	fmt.Println("Usage: " + filepath.Base(os.Args[0]) + " " + Config.FlagString + "novalueflag" + " " + Config.FlagString + "valueflag=value")
+	fmt.Printf("Usage: %s --novalueflag --valueflag=value\n", filepath.Base(os.Args[0]))
 	fmt.Println("The following options are available:")
 
 	// #region Sort Flags
@@ -64,9 +57,8 @@ func PrintFlags() {
 		thisFlagNameLength := len(flagName)                        // Get the length of this flagName
 		flagLengthDiff := (LongestFlagLength - thisFlagNameLength) // Get the difference in flag name length compared to the longest one
 
-		fmt.Println(Config.FlagString + flagName + strings.Repeat(" ", flagLengthDiff) + flag.Descriptor) // Output the flag, creating enough spacing to along descriptor
+		fmt.Printf("--" + flagName + strings.Repeat(" ", flagLengthDiff) + flag.Descriptor) // Output the flag, creating enough spacing to along descriptor
 		if flag.DefaultValue != nil {                                                                     // If DefaultValue is not nil
-
 			if (flag.DefaultValue != "") && (flag.DefaultValue != false) { // If the default value is not an empty string and not false
 				fmt.Println("Default Value: ", flag.DefaultValue)
 			}
